@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bugs Created</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Bugs Created</h2>
+        <form id="bugs-created-form">
+            <input type="text" id="description" placeholder="Description" required>
+            <input type="date" id="date" required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('bugs-created-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const description = document.getElementById('description').value;
+            const date = document.getElementById('date').value;
+
+            fetch('/api/bugs-created', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ description, date })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Bug entry submitted.');
+                    document.getElementById('bugs-created-form').reset();
+                } else {
+                    alert('Submission failed.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

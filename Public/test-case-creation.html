@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Case Creation Entry</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Test Case Creation Entry</h2>
+        <form id="test-case-creation-form">
+            <input type="text" id="description" placeholder="Description" required>
+            <input type="date" id="date" required>
+            <input type="number" id="manDays" placeholder="Man-days" required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('test-case-creation-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const description = document.getElementById('description').value;
+            const date = document.getElementById('date').value;
+            const manDays = parseFloat(document.getElementById('manDays').value);
+
+            fetch('/api/test-case-creation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ description, date, manDays })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Test case creation entry submitted.');
+                    document.getElementById('test-case-creation-form').reset();
+                } else {
+                    alert('Submission failed.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

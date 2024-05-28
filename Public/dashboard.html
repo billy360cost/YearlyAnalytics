@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <h2>Dashboard</h2>
+        <button onclick="navigate('test-case-execution')">Test Case Execution Entry</button>
+        <button onclick="navigate('test-case-creation')">Test Case Creation Entry</button>
+        <button onclick="navigate('bugs-created')">Bugs Created</button>
+        
+        <div class="analytics">
+            <h3>Analytics</h3>
+            <label for="analytics-period">Choose a period:</label>
+            <select id="analytics-period">
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+            </select>
+            <div id="yearly-options" style="display: none;">
+                <label for="from-month">From:</label>
+                <input type="month" id="from-month">
+                <label for="to-month">To:</label>
+                <input type="month" id="to-month">
+            </div>
+            <button onclick="showAnalytics()">Show Analytics</button>
+        </div>
+        <div class="analytics-results" id="analytics-results" style="display: none;">
+            <h3>Analytics Results</h3>
+            <p id="test-case-creation-stats"></p>
+            <p id="test-case-execution-stats"></p>
+            <p id="total-defects"></p>
+        </div>
+    </div>
+    <script>
+        function navigate(section) {
+            window.location.href = `/${section}.html`;
+        }
+
+        document.getElementById('analytics-period').addEventListener('change', function() {
+            if (this.value === 'yearly') {
+                document.getElementById('yearly-options').style.display = 'block';
+            } else {
+                document.getElementById('yearly-options').style.display = 'none';
+            }
+        });
+
+        function showAnalytics() {
+            const period = document.getElementById('analytics-period').value;
+            const fromMonth = document.getElementById('from-month').value;
+            const toMonth = document.getElementById('to-month').value;
+
+            fetch('/api/analytics', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ period, fromMonth, toMonth })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('analytics-results').style.display = 'block';
+                document.getElementById('test-case-creation-stats').textContent = 
+                    `Test case creation: ${data.creationPerManDay.toFixed(2)} test cases/man day. ` +
+                    `A total of ${data.totalCreation} test cases were created in ${data.creationManDays} man-days, ` +
+                    `averaging ${data.creationPerManDay.toFixed(2)} test cases per man-day over 12 months.`;
+                document.getElementById('test-case-execution-stats').textContent = 
+                    `Test case execution: ${data.executionPerManDay.toFixed(2)} test cases/man day. ` +
+                    `A total of ${data.totalExecution} test cases were executed in ${data.executionManDays} man-days, ` +
+                    `averaging ${data.executionPerManDay.toFixed(2)} test cases per man-day over 12 months.`;
+                document.getElementById('total-defects').textContent = 
+                    `Total of ${data.totalDefects} defects were found.`;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
