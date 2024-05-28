@@ -7,7 +7,11 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Mock user data for authentication
-const users = [{ username: 'teamMember', password: 'password123' }];
+const users = [
+    { username: 'Ashok', password: 'Taboo@123', role: 'admin' },
+    { username: 'Isaac', password: 'AmmuAmmu', role: 'user' },
+    { username: 'Karthk', password: 'Login@123', role: 'user' }
+];
 const testCases = {
     creation: [],
     execution: [],
